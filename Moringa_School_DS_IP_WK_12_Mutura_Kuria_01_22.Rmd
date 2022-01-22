@@ -1,0 +1,299 @@
+# 1.0 Business Understanding
+
+##1.1 Define the question
+
+A Kenyan entrepreneur has created an online cryptography course and would want to advertise it on her blog. She currently targets audiences originating from various countries. In the past, she ran ads to advertise a related course on the same blog and collected data in the process. She would now like to employ your services as a Data Science Consultant to help her identify which individuals are most likely to click on her ads. 
+
+
+
+##1.2 Define the Metric for Success
+Perform Bivariate and Multivariate analysis giving recommendations 
+
+##1.3 Experimental design
+-Business Understanding
+-Data Cleaning
+-Univarite Analysis
+-Bivariate Analysis
+-Conclusion
+-Recommendations
+
+
+
+
+#2.0 Data Preparation
+
+```{r}
+#Lets load our dataset
+
+advertising_data = read.csv("advertising.csv")
+
+#Loading the first 6 rows
+head(advertising_data)
+```
+
+```{r}
+#Checking the dataset dimensions
+dim(advertising_data)
+```
+```{r}
+#Checking the Column names
+colnames(advertising_data)
+
+```
+```{r}
+#Checking the data types
+sapply(advertising_data, class)
+```
+
+-The dataset has 10 coumns and 1000 rows
+-Click on ad is the dependent variable while all 9 others are the independent variables
+
+# 3.0 Data Cleaning
+## 3.1 Missing Values
+
+```{r}
+#Checking for missing values per column
+colSums(is.na(advertising_data))
+```
+-This Dataset has no missing values.
+
+## Outliers
+
+```{r}
+#Checking the outliers for Daily time spent, age area income and Daily internet usage
+
+boxplot(advertising_data$Daily.Time.Spent.on.Site, main="Daily Time spent on site")
+
+```
+```{r}
+boxplot(advertising_data$Age, main = "Age")
+
+```
+
+```{r}
+boxplot(advertising_data$Area.Income, main = "Area income")
+```
+
+
+```{r}
+boxplot(advertising_data$Daily.Internet.Usage, main = "Daily internet usage")
+```
+
+
+-Daily time spent, age and daily internet usage have no outliers
+-Area of income has a few outliers and this represents the low income areas and wont have any effect on our data.
+
+## 3.3 Duplicates
+
+```{r}
+duplicates <- advertising_data[duplicated(advertising_data),]
+duplicates
+```
+##3.4 Date conversion
+```{r}
+#changing the timestamp datatype from factor to date_time
+advertising_data$Timestamp <- as.Date(advertising_data$Timestamp, format = "%Y-%m-%s-%h-%m-
+%s")
+#checking the new datatype for the Timestamp column
+sapply(advertising_data, class)
+```
+-our data is now ready for analysis
+
+# 4.0 Data Analysis
+## 4.1 Univariate analysis
+
+### 4.1.1 Measures of central tendancy and dispersion
+
+#### Daily time spent on site
+
+```{r}
+#Getting mode function
+# 
+getmode <- function(v) {
+   uniqv <- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+```
+
+```{r}
+#Getting mean, median,mode, min, max, range, variance and standard deviation for Daily time spent
+
+print(paste("The mean is ", mean(advertising_data$Daily.Time.Spent.on.Site)))
+print(paste("The median is ", median(advertising_data$Daily.Time.Spent.on.Site)))
+print(paste("The mode is ",getmode(advertising_data$Daily.Time.Spent.on.Site)))
+print(paste("The minimum is ",min(advertising_data$Daily.Time.Spent.on.Site)))
+print(paste("The maximum is ",max(advertising_data$Daily.Time.Spent.on.Site)))
+print(paste("The range is ",range(advertising_data$Daily.Time.Spent.on.Site)))
+print(paste("The varianceis ",var(advertising_data$Daily.Time.Spent.on.Site)))
+print(paste("The standard deviation is ",sd(advertising_data$Daily.Time.Spent.on.Site)))
+```
+
+#### Age
+```{r}
+#Getting mean, median and mode for Age
+print(paste("The mean is ", mean(advertising_data$Age)))
+print(paste("The median is ", median(advertising_data$Age)))
+print(paste("The mode is ",getmode(advertising_data$Age)))
+print(paste("The minimum is ",min(advertising_data$Age)))
+print(paste("The maximum is ",max(advertising_data$Age)))
+print(paste("The range is ",range(advertising_data$Age)))
+print(paste("The varianceis ",var(advertising_data$Age)))
+print(paste("The standard deviation is ",sd(advertising_data$Age)))
+```
+#### Area income
+```{r}
+#Getting mean, median and mode for Area income
+print(paste("The mean is ", mean(advertising_data$Area.Income)))
+print(paste("The median is ", median(advertising_data$Area.Income)))
+print(paste("The mode is ",getmode(advertising_data$Area.Income)))
+print(paste("The minimum is ",min(advertising_data$Area.Income)))
+print(paste("The maximum is ",max(advertising_data$Area.Income)))
+print(paste("The range is ",range(advertising_data$Area.Income)))
+print(paste("The varianceis ",var(advertising_data$Area.Income)))
+print(paste("The standard deviation is ",sd(advertising_data$Area.Income)))
+```
+####Daily internet usage
+```{r}
+#Getting mean, median and mode for Daily internet usage
+
+print(paste("The mean is ", mean(advertising_data$Daily.Internet.Usage)))
+print(paste("The median is ", median(advertising_data$Daily.Internet.Usage)))
+print(paste("The mode is ",getmode(advertising_data$Daily.Internet.Usage)))
+print(paste("The minimum is ",min(advertising_data$Daily.Internet.Usage)))
+print(paste("The maximum is ",max(advertising_data$Daily.Internet.Usage)))
+print(paste("The range is ",range(advertising_data$Daily.Internet.Usage)))
+print(paste("The varianceis ",var(advertising_data$Daily.Internet.Usage)))
+print(paste("The standard deviation is ",sd(advertising_data$Daily.Internet.Usage)))
+```
+### 4.1.2 Gender distribution
+```{r}
+# Plot the chart.
+pie(table(advertising_data$Male), labels <-c("Female", "Male") )
+
+```
+-The number of females is higher than that of male
+
+
+### 3.1.3 Clicks rate
+```{r}
+barplot(table(advertising_data$Clicked.on.Ad))
+```
+-Click conversion rate is 50% meaning the number of those who clicked on ad and those who didnt is the same
+
+####3.1.3 Country 
+```{r}
+hist(advertising_data$Daily.Time.Spent.on.Site)
+```
+- Most time spent on site was between 65 and 85 mins
+
+####3.1.4 Age Distribution
+
+
+```{r}
+hist(advertising_data$Age)
+```
+-The most popular age group is between 25 to 40 years
+
+```{r}
+# display density plot
+print(plot(density(advertising_data$Area.Income)))
+
+```
+-Area of income is skewed to the right. Meaning the usage is higher on the areas of income
+
+##3.2 Bivariate Analysis
+
+```{r}
+##We exclude the data that we wont use
+advertising_data2 <- subset(advertising_data, select = c(Daily.Time.Spent.on.Site, 
+Age,Area.Income,Daily.Internet.Usage,Male,Clicked.on.Ad ))
+head(advertising_data2)
+```
+
+
+## 3.2.1 Age vs time on site
+####Datetime
+```{r}
+#Time spent on the site vs age of the user
+# Libraries
+library(ggplot2)
+# create data
+Time_on_site <- advertising_data2$Daily.Time.Spent.on.Site
+Age_of_user <- advertising_data2$Age
+data <- data.frame(Time_on_site,Age_of_user)
+# Plot
+ggplot(data, aes(x=Time_on_site, y=Age_of_user)) + geom_point()
+```
+-People aged between 25 and 40 are the one spending most time on site.
+
+###3.2.2 Ages vs area of income
+
+
+```{r}
+plot(advertising_data2$Age, advertising_data2$Area.Income, xlab="Age", ylab="Area of income")
+```
+-60,000 is the most popular area of income
+
+
+###3.2.3 Covariance
+
+
+
+```{r}
+#Covariance between Daily time spent and age
+cov(advertising_data2$Daily.Time.Spent.on.Site,advertising_data2$Age)
+```
+-Negative covariance meaning Age and daily time spent do not have similarity
+```{r}
+
+#Covariance between Daily time spent and area of income
+cov(advertising_data2$Daily.Time.Spent.on.Site,advertising_data2$Area.Income)
+```
+-Positive covariance. Meaning they show linear similarity
+```{r}
+
+
+#Covariance between Daily time spent and Daily internet usage
+cov(advertising_data2$Daily.Time.Spent.on.Site,advertising_data2$Daily.Internet.Usage)
+```
+-Positive covariance. Meaning they show linear similarity
+
+###3.2.3 Corelation
+
+```{r}
+#The default method is Pearson, but we can also compute Spearman or Kendall coefficients.
+mydata = cor(advertising_data2, method = c("spearman"))
+mydata1= cor(advertising_data2, method = c("kendall"))
+mydata2= cor(advertising_data2, method = c("pearson"))
+mydata #spearman
+```
+
+
+
+```{r}
+library("Hmisc")
+library(corrplot)
+corrplot(mydata)
+```
+-Positive correlations are displayed in a blue scale while negative correlations are displayed
+in a red scale
+- There is very minimal positive correlation between the variables in the data
+
+#### Age vs clicked
+
+```{r}
+
+plot(advertising_data2$Daily.Time.Spent.on.Site, advertising_data2$Area.Income, xlab="Time spent on site", ylab="Area of income")
+```
+-Those who spent more time in site have are from the higher area of income
+
+# 5.0 Conclusions
+
+-We can conclude that Time spent on site will highly influence someone to click on ad
+-Female gender is most likely to click on ads
+-Higher areas of income are likely to provide more clicks
+
+# 
+
+
+
